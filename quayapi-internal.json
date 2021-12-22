@@ -1,4 +1,3 @@
-<data>
 {
     "swagger": "2.0",
     "host": "example-registry-quay-quay-enterprise.apps.docs2.quayteam.org",
@@ -12886,4 +12885,3 @@
         }
     ]
 }
-</data>

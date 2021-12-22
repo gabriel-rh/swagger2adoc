@@ -5,14 +5,30 @@
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:xp="http://www.w3.org/2005/xpath-functions"
 	exclude-result-prefixes="xs math" 
-	version="2.0">
+	version="3.0">
 	
+	<xsl:param name="source" select="'file:quayapi.json'"/>
+		
 	<xsl:output indent="no" omit-xml-declaration="yes" />
+	
+	
+	
+	<xsl:template match="/">
+		<xsl:variable name="jsonstr" select="unparsed-text($source)"/>
+		
+		<xsl:variable name="jsondoc" select="json-to-xml($jsonstr)"/>
+		
+		<xsl:apply-templates select="$jsondoc/xp:map"/>
+			
+	</xsl:template>
 
 	<xsl:template match="/xp:map">
 
-		<xsl:text>&#xA;= Red Hat Quay API&#xA;&#xA;</xsl:text>
-		<xsl:text>The API provides programatic access to the features supported by Red Hat Quay.&#xA;&#xA;</xsl:text>
+		<!--<xsl:text>&#xA;= Red Hat Quay API&#xA;&#xA;</xsl:text>
+		<xsl:text>The API provides programatic access to the features supported by Red Hat Quay.&#xA;&#xA;</xsl:text>-->
+		
+	    <xsl:text>&#xA;= </xsl:text><xsl:value-of select="xp:map[@key='info']/xp:string[@key='title']"/><xsl:text>&#xA;&#xA;</xsl:text>
+	    <xsl:value-of disable-output-escaping="yes" select="xp:map[@key='info']/xp:string[@key='description']" /><xsl:text>&#xA;&#xA;</xsl:text>
 	    
 	    <xsl:apply-templates select="xp:map[@key='securityDefinitions']"/>	    
 	    <xsl:apply-templates select="xp:map[@key='paths']"/>
