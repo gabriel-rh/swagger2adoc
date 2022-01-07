@@ -53,7 +53,7 @@
     
 			<xsl:text>The folowing scopes are used to control access to the API endpoints:&#xA;&#xA;</xsl:text>    
     
-			<xsl:text>[options="header", cols=".^2a,.^9a"]&#xA;</xsl:text>
+			<xsl:text>[options="header", width=100%, cols=".^2a,.^9a"]&#xA;</xsl:text>
 			<xsl:text>|===&#xA;</xsl:text>
 			<xsl:text>|Scope|Description&#xA;</xsl:text>
 
@@ -129,7 +129,7 @@
 		
 		<xsl:text>&#xA;[discrete]&#xA;</xsl:text>  
 		<xsl:text>==== Path parameters&#xA;&#xA;</xsl:text>	
-		<xsl:text>[options="header", cols=".^2a,.^3a,.^9a,.^4a"]&#xA;</xsl:text>
+		<xsl:text>[options="header", width=100%, cols=".^2a,.^3a,.^9a,.^4a"]&#xA;</xsl:text>
 		<xsl:text>|===&#xA;</xsl:text>
 		<xsl:text>|Type|Name|Description|Schema&#xA;</xsl:text>    
 
@@ -170,7 +170,7 @@
 		<xsl:text>&#xA;&#xA;[discrete]&#xA;</xsl:text>  	
 		<xsl:text>==== Query parameters&#xA;&#xA;</xsl:text>	
 		
-		<xsl:text>[options="header", cols=".^2a,.^3a,.^9a,.^4a"]&#xA;</xsl:text>
+		<xsl:text>[options="header", width=100%, cols=".^2a,.^3a,.^9a,.^4a"]&#xA;</xsl:text>
 		<xsl:text>|===&#xA;</xsl:text>
 		<xsl:text>|Type|Name|Description|Schema&#xA;</xsl:text>    
 		
@@ -217,7 +217,7 @@
 			<xsl:text>==== Request body schema (application/json)&#xA;&#xA;</xsl:text>
 			<xsl:value-of select="xp:string[@key='description']"/><xsl:text>&#xA;&#xA;</xsl:text>	
 			
-			<xsl:text>[options="header", cols=".^3a,.^9a,.^4a"]&#xA;</xsl:text>
+			<xsl:text>[options="header", width=100%, cols=".^3a,.^9a,.^4a"]&#xA;</xsl:text>
 			<xsl:text>|===&#xA;</xsl:text>
 			<xsl:text>|Name|Description|Schema&#xA;</xsl:text>   
 			
@@ -261,7 +261,7 @@
 	<xsl:text>&#xA;&#xA;[discrete]&#xA;</xsl:text>   
 	<xsl:text>==== Responses&#xA;&#xA;</xsl:text>	
 	
-	<xsl:text>[options="header", cols=".^2a,.^14a,.^4a"]&#xA;</xsl:text>
+	<xsl:text>[options="header", width=100%, cols=".^2a,.^14a,.^4a"]&#xA;</xsl:text>
 	<xsl:text>|===&#xA;</xsl:text>
 	<xsl:text>|HTTP Code|Description|Schema&#xA;</xsl:text>
 	
@@ -307,7 +307,7 @@
 	<xsl:value-of select="concat('&#xA;[[_', lower-case(@key), ']]&#xA;')"/>
 	<xsl:value-of select="concat('=== ', @key, '&#xA;&#xA;')"/>	
 	
-	<xsl:text>[options="header", cols=".^3a,.^9a,.^4a"]&#xA;</xsl:text>
+	<xsl:text>[options="header", width=100%, cols=".^3a,.^9a,.^4a"]&#xA;</xsl:text>
 	<xsl:text>|===&#xA;</xsl:text>
 	<xsl:text>|Name|Description|Schema&#xA;</xsl:text>   
 	
