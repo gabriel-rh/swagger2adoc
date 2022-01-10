@@ -1,4 +1,4 @@
-[width=100]
+[width=80%]
 |===
 |HTTP Code|Description|Schema
 |200|Successful invocation|
