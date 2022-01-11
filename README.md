@@ -47,10 +47,10 @@ java -jar ~/saxon/saxon-he-10.6.jar -s:dummy.xml -xsl:swagger2adoc.xslt -o:quayi
 
 
 ## Possible error with certs with `https` source
-
+```
 Error at char 14 in expression in xsl:variable/@select on line 17 column 65 of swagger2adoc.xslt:
   FOUT1170  Failed to read input file
-  https://example-registry-quay-quay-enterprise.apps.docs2.quayteam.org/api/v1/discovery.
+  https://example-registry-quay-quay-enterprise.apps.test1.quayteam.org/api/v1/discovery.
   Caused by javax.net.ssl.SSLHandshakeException: PKIX path building failed:
   sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid
   certification path to requested target. Caused by
@@ -60,9 +60,10 @@ Error at char 14 in expression in xsl:variable/@select on line 17 column 65 of s
   sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid
   certification path to requested target
   In template rule with match="/" on line 16 of swagger2adoc.xslt
-Failed to read input file https://example-registry-quay-quay-enterprise.apps.docs2.quayteam.org/api/v1/discovery
+Failed to read input file https://example-registry-quay-quay-enterprise.apps.test1.quayteam.org/api/v1/discovery
+```
 
-
+To get around this error, use the followiing steps:
 
 - Download cert
 - Import into trust store
