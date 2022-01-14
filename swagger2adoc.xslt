@@ -51,7 +51,7 @@
     		<xsl:text>&#xA;[discrete]&#xA;</xsl:text>
 		    <xsl:text>=== Scopes&#xA;&#xA;</xsl:text>	
     
-			<xsl:text>The folowing scopes are used to control access to the API endpoints:&#xA;&#xA;</xsl:text>    
+			<xsl:text>The following scopes are used to control access to the API endpoints:&#xA;&#xA;</xsl:text>    
     
 			<xsl:text>[options="header", width=100%, cols=".^2a,.^9a"]&#xA;</xsl:text>
 			<xsl:text>|===&#xA;</xsl:text>
