@@ -8,6 +8,7 @@
 	version="3.0">
 	
 	<xsl:param name="source" select="'file:quayapi.json'"/>
+	<xsl:param name="output-prologue" select="'yes'"/>
 		
 	<xsl:output indent="no" omit-xml-declaration="yes" />
 	
@@ -24,12 +25,22 @@
 
 	<xsl:template match="/xp:map">
 
+	<xsl:choose>
+	<xsl:when test="$output-prologue='yes'">
+		<xsl:call-template name="output-prologue"/>
+	</xsl:when>
+	<xsl:otherwise>
 		<!--<xsl:text>&#xA;= Red Hat Quay API&#xA;&#xA;</xsl:text>
 		<xsl:text>The API provides programatic access to the features supported by Red Hat Quay.&#xA;&#xA;</xsl:text>-->
 		
 	    <xsl:text>&#xA;= </xsl:text><xsl:value-of select="xp:map[@key='info']/xp:string[@key='title']"/><xsl:text>&#xA;&#xA;</xsl:text>
 	    <xsl:value-of disable-output-escaping="yes" select="xp:map[@key='info']/xp:string[@key='description']" /><xsl:text>&#xA;&#xA;</xsl:text>
-	    
+
+	</xsl:otherwise>
+	</xsl:choose>
+
+
+
 	    <xsl:apply-templates select="xp:map[@key='securityDefinitions']"/>	    
 	    <xsl:apply-templates select="xp:map[@key='paths']"/>
 	    
@@ -42,14 +53,16 @@
 
     <xsl:template match="/xp:map/xp:map[@key='securityDefinitions']">	
 
-		<xsl:text>&#xA;== Authorization&#xA;</xsl:text>
+
+<xsl:result-document href="modules/api-authorization.adoc"  indent="no" omit-xml-declaration="yes">
+		<xsl:text>&#xA;= Authorization&#xA;</xsl:text>
 
 		<xsl:for-each select="xp:map">
 
     		<xsl:text>&#xA;</xsl:text><xsl:value-of select="@key"/><xsl:text>&#xA;&#xA;</xsl:text>
     
     		<xsl:text>&#xA;[discrete]&#xA;</xsl:text>
-		    <xsl:text>=== Scopes&#xA;&#xA;</xsl:text>	
+		    <xsl:text>== Scopes&#xA;&#xA;</xsl:text>	
     
 			<xsl:text>The following scopes are used to control access to the API endpoints:&#xA;&#xA;</xsl:text>    
     
@@ -64,7 +77,10 @@
 			<xsl:text>|===&#xA;</xsl:text>  
  
 		</xsl:for-each>
-  	
+
+  </xsl:result-document>
+  <xsl:text>&#xA;include::</xsl:text><xsl:value-of select="'modules/api-authorization.adoc'"/><xsl:text>[leveloffset=+2]&#xA;</xsl:text>
+
     </xsl:template>
     
     
@@ -73,22 +89,36 @@
     	    	
     		<xsl:for-each-group select="./xp:map[starts-with(@key, '/api/v1')]" group-by="string(xp:string[@key='x-tag'])">
 
-				<xsl:text>&#xA;== </xsl:text><xsl:value-of select="xp:string[@key='x-tag']"/><xsl:text>&#xA;&#xA;</xsl:text>
 
 				<xsl:variable name="tag" select="xp:string[@key='x-tag']"/>
 
-				<xsl:value-of select="/xp:map/xp:array[@key='tags']/xp:map[xp:string[@key='name' and string(.)=$tag]]/xp:string[@key='description']"/><xsl:text>&#xA;&#xA;</xsl:text>
+				<xsl:variable name="tag-filename" select="concat('modules/api-', $tag, '.adoc')"/>
 
+<xsl:result-document href="{$tag-filename}"  indent="no" omit-xml-declaration="yes">
+				<xsl:text>&#xA;= </xsl:text><xsl:value-of select="$tag"/><xsl:text>&#xA;</xsl:text>
+
+				<xsl:value-of select="/xp:map/xp:array[@key='tags']/xp:map[xp:string[@key='name' and string(.)=$tag]]/xp:string[@key='description']"/><xsl:text>&#xA;&#xA;</xsl:text>
+</xsl:result-document>
+
+<xsl:text>&#xA;&#xA;include::</xsl:text><xsl:value-of select="$tag-filename"/><xsl:text>[leveloffset=+2]</xsl:text>
     	
 				<xsl:for-each select="current-group()">   
 	    	
     				<xsl:for-each select="./xp:map">
-						<xsl:text>&#xA;=== </xsl:text><xsl:value-of select="xp:string[@key='operationId']"/><xsl:text>&#xA;</xsl:text>
+
+						<xsl:variable name="operationId" select="xp:string[@key='operationId']"/>
+
+						<xsl:variable name="filename" select="concat('modules/api-', $tag, '-', $operationId, '.adoc')"/>
+
+<xsl:result-document href="{$filename}"  indent="no" omit-xml-declaration="yes">					
+						<xsl:text>&#xA;= </xsl:text><xsl:value-of select="$operationId"/><xsl:text>&#xA;</xsl:text>
+
+
 						<xsl:value-of select="./xp:string[@key='description']"/>
 
 
 						<xsl:text>&#xA;&#xA;[discrete]&#xA;</xsl:text>    		
-						<xsl:text>=== </xsl:text><xsl:value-of select="upper-case(@key)"/> <xsl:text> </xsl:text><xsl:value-of select="../xp:string[@key='x-path']"/><xsl:text>&#xA;&#xA;</xsl:text>    
+						<xsl:text>== </xsl:text><xsl:value-of select="upper-case(@key)"/> <xsl:text> </xsl:text><xsl:value-of select="../xp:string[@key='x-path']"/><xsl:text>&#xA;&#xA;</xsl:text>    
             
 
 						<xsl:call-template name="output-authorizations"/>
@@ -100,6 +130,9 @@
 						<xsl:call-template name="output-body-schema"/>
 						
 						<xsl:call-template name="output-responses"/>
+</xsl:result-document>
+
+<xsl:text>&#xA;include::</xsl:text><xsl:value-of select="$filename"/><xsl:text>[leveloffset=+3]</xsl:text>
 
     				</xsl:for-each>
     				</xsl:for-each>
@@ -128,7 +161,7 @@
 	<xsl:if test="xp:array[@key='parameters']/xp:map/xp:string[@key='in'] = 'path'">
 		
 		<xsl:text>&#xA;[discrete]&#xA;</xsl:text>  
-		<xsl:text>==== Path parameters&#xA;&#xA;</xsl:text>	
+		<xsl:text>== Path parameters&#xA;&#xA;</xsl:text>	
 		<xsl:text>[options="header", width=100%, cols=".^2a,.^3a,.^9a,.^4a"]&#xA;</xsl:text>
 		<xsl:text>|===&#xA;</xsl:text>
 		<xsl:text>|Type|Name|Description|Schema&#xA;</xsl:text>    
@@ -168,7 +201,7 @@
 	<xsl:if test="xp:array[@key='parameters']/xp:map/xp:string[@key='in'] = 'query'">
 		
 		<xsl:text>&#xA;&#xA;[discrete]&#xA;</xsl:text>  	
-		<xsl:text>==== Query parameters&#xA;&#xA;</xsl:text>	
+		<xsl:text>== Query parameters&#xA;&#xA;</xsl:text>	
 		
 		<xsl:text>[options="header", width=100%, cols=".^2a,.^3a,.^9a,.^4a"]&#xA;</xsl:text>
 		<xsl:text>|===&#xA;</xsl:text>
@@ -214,7 +247,7 @@
 		<xsl:for-each select="/xp:map/xp:map[@key='definitions']/xp:map[@key=$defn-name]">                  
 		
 			<xsl:text>&#xA;&#xA;[discrete]&#xA;</xsl:text>  	
-			<xsl:text>==== Request body schema (application/json)&#xA;&#xA;</xsl:text>
+			<xsl:text>== Request body schema (application/json)&#xA;&#xA;</xsl:text>
 			<xsl:value-of select="xp:string[@key='description']"/><xsl:text>&#xA;&#xA;</xsl:text>	
 			
 			<xsl:text>[options="header", width=100%, cols=".^3a,.^9a,.^4a"]&#xA;</xsl:text>
@@ -259,7 +292,7 @@
 <xsl:template name="output-responses">
 	
 	<xsl:text>&#xA;&#xA;[discrete]&#xA;</xsl:text>   
-	<xsl:text>==== Responses&#xA;&#xA;</xsl:text>	
+	<xsl:text>== Responses&#xA;&#xA;</xsl:text>	
 	
 	<xsl:text>[options="header", width=100%, cols=".^2a,.^14a,.^4a"]&#xA;</xsl:text>
 	<xsl:text>|===&#xA;</xsl:text>
@@ -288,7 +321,9 @@
 
 <xsl:template name="output-response-defns">
 
-	<xsl:text>&#xA;&#xA;== Definitions&#xA;</xsl:text>
+
+<xsl:result-document href="modules/api-definitions.adoc"  indent="no" omit-xml-declaration="yes">
+	<xsl:text>&#xA;&#xA;= Definitions&#xA;</xsl:text>
 	
 	<xsl:variable name="list-of-defns" select="for $i in distinct-values(//xp:map[@key='responses']//xp:map[@key='schema']/xp:string[@key='$ref']) return substring-after($i, '#/definitions/')"/>
 	
@@ -296,7 +331,9 @@
 	<xsl:for-each select="//xp:map[@key='definitions']/xp:map[@key = $list-of-defns]">
 		<xsl:call-template name="output-defn"/>
 	</xsl:for-each>	
+</xsl:result-document>
 
+<xsl:text>&#xA;&#xA;include::</xsl:text><xsl:value-of select="'modules/api-definitions.adoc'"/><xsl:text>[leveloffset=+2]&#xA;</xsl:text>
 
 </xsl:template>
 
@@ -305,7 +342,7 @@
 <xsl:template name="output-defn">
 	
 	<xsl:value-of select="concat('&#xA;[[_', lower-case(@key), ']]&#xA;')"/>
-	<xsl:value-of select="concat('=== ', @key, '&#xA;&#xA;')"/>	
+	<xsl:value-of select="concat('== ', @key, '&#xA;&#xA;')"/>	
 	
 	<xsl:text>[options="header", width=100%, cols=".^3a,.^9a,.^4a"]&#xA;</xsl:text>
 	<xsl:text>|===&#xA;</xsl:text>
@@ -340,5 +377,28 @@
 	<xsl:text>|===&#xA;</xsl:text> 
 </xsl:template>
 
+
+<xsl:template name="output-prologue">
+
+<xsl:text>include::modules/attributes.adoc[]</xsl:text>
+<xsl:text>&#xA;</xsl:text>
+<xsl:text>&#xA;[id='api']</xsl:text>
+<xsl:text>&#xA;</xsl:text>
+<xsl:text>&#xA;= {productname} API Guide</xsl:text>
+<xsl:text>&#xA;</xsl:text>
+<xsl:text>&#xA;The {productname} application programming interface (API) is an OAuth 2 RESTful API that</xsl:text>
+<xsl:text>&#xA;consists of a set of endpoints</xsl:text>
+<xsl:text>&#xA;for adding, displaying, changing and deleting features for {productname}.</xsl:text>
+<xsl:text>&#xA;This guide describes those endpoints and shows command and browser-based examples</xsl:text>
+<xsl:text>&#xA;for accessing them.</xsl:text>
+<xsl:text>&#xA;</xsl:text>
+<xsl:text>&#xA;include::modules/proc_use-api.adoc[leveloffset=+1]</xsl:text>
+<xsl:text>&#xA;</xsl:text>
+<xsl:text>&#xA;== Appendix A: {productname} Application Programming Interface (API)</xsl:text>
+<xsl:text>&#xA;[id="ref-api-quay"]</xsl:text>
+<xsl:text>&#xA;</xsl:text>
+<xsl:text>&#xA;This API allows you to perform many of the operations required to work with {productname} repositories, users, and organizations.</xsl:text>
+<xsl:text>&#xA;</xsl:text>
+</xsl:template>
 
 </xsl:stylesheet>
